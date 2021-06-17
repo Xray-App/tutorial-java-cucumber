@@ -31,10 +31,10 @@ jobs:
         rm -f features/*.feature
         unzip -o $FEATURES_FILE  -d features
     - name: Run tests
-      run: mvn clean compile test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
+      run: mvn test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
     - name: generate auxiliary file to define fields on the Test Execution
       run: |
         cat testexec_template.json  | sed s/PROJECT_KEY/${{ secrets.JIRASERVER_PROJECT_KEY }}/g | sed s/CF_TEST_ENVIRONMENT/${{ secrets.JIRASERVER_CF_TEST_ENVIRONMENTS }}/g |  sed s/TEST_ENVIRONMENT_NAME/${{ env.BROWSER }}/g | sed s/CF_TEST_PLAN/${{ secrets.JIRASERVER_CF_TEST_PLAN }}/g  | sed s/TESTPLAN_KEY/${{ secrets.XRAYSERVER_TEST_PLAN_KEY }}/g > test_exec.json
     - name: "Import results to Xray (server/DC) using multipart endpoint"
       run: |
-        curl -X POST -u ${{ secrets.JIRASERVER_USERNAME }}:${{ secrets.JIRASERVER_PASSWORD }} -F info=@test_exec.json -F result=@"merged-test-results.json" ${{ secrets.JIRASERVER_BASE_URL }}/rest/raven/2.0/import/execution/cucumber/multipart
+        curl -X POST -u ${{ secrets.JIRASERVER_USERNAME }}:${{ secrets.JIRASERVER_PASSWORD }} -F info=@test_exec.json -F result=@"report.json" ${{ secrets.JIRASERVER_BASE_URL }}/rest/raven/2.0/import/execution/cucumber/multipart
