@@ -1,0 +1,40 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: CI with Xray server/DC
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    - name: Build with Maven
+      run: mvn clean compile -B package --file pom.xml
+    - name: Export scenarios from Xray and generate .feature file(s)
+      run: |
+        FEATURES_FILE=features.zip
+        rm -f $FEATURES_FILE
+        curl -u ${{ secrets.JIRASERVER_USERNAME }}:${{ secrets.JIRASERVER_PASSWORD }}  "${{ secrets.JIRASERVER_BASE_URL }}/rest/raven/2.0/export/test?keys=${{ secrets.XRAYSERVER_ISSUE_KEYS_TO_EXPORT_FROM }}&fz=true" -o $FEATURES_FILE
+        rm -f features/*.feature
+        unzip -o $FEATURES_FILE  -d features
+    - name: Run tests
+      run: mvn clean compile test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
+    - name: generate auxiliary file to define fields on the Test Execution
+      run: |
+        cat testexec_template.json  | sed s/PROJECT_KEY/${{ secrets.JIRASERVER_PROJECT_KEY }}/g | sed s/CF_TEST_ENVIRONMENT/${{ secrets.JIRASERVER_CF_TEST_ENVIRONMENTS }}/g |  sed s/TEST_ENVIRONMENT_NAME/${{ env.BROWSER }}/g | sed s/CF_TEST_PLAN/${{ secrets.JIRASERVER_CF_TEST_PLAN }}/g  | sed s/TESTPLAN_KEY/${{ secrets.XRAYSERVER_TEST_PLAN_KEY }}/g > test_exec.json
+    - name: "Import results to Xray (server/DC) using multipart endpoint"
+      run: |
+        curl -X POST -u ${{ secrets.JIRASERVER_USERNAME }}:${{ secrets.JIRASERVER_PASSWORD }} -F info=@test_exec.json -F result=@"merged-test-results.json" ${{ secrets.JIRASERVER_BASE_URL }}/rest/raven/2.0/import/execution/cucumber/multipart
