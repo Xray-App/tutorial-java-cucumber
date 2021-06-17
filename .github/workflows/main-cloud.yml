@@ -13,13 +13,15 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+      JDK_VERSION: 11
+      
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 11
+    - name: Set up JDK ${{ env.JDK_VERSION }}
       uses: actions/setup-java@v2
       with:
-        java-version: '11'
+        java-version: '${{ env.JDK_VERSION }}'
         distribution: 'adopt'
     - name: Build with Maven
       run: mvn clean compile -B package --file pom.xml
@@ -38,7 +40,7 @@ jobs:
       run: mvn test -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/"
     - name: generate auxiliary JSON to define some fields on the Test Execution to be created
       run: |
-        cat testexec_cloud_template.json  | sed s/PROJECT_KEY/${{ secrets.JIRACLOUD_PROJECT_KEY }}/g | sed s/TEST_ENVIRONMENT_NAME/${{ env.BROWSER }}/g | sed s/TESTPLAN_KEY/${{ secrets.XRAYCLOUD_TEST_PLAN_KEY }}/g > test_exec.json
+        cat testexec_cloud_template.json  | sed s/PROJECT_KEY/${{ secrets.JIRACLOUD_PROJECT_KEY }}/g | sed s/TEST_ENVIRONMENT_NAME/jdk${{ env.JDK_VERSION }}/g | sed s/TESTPLAN_KEY/${{ secrets.XRAYCLOUD_TEST_PLAN_KEY }}/g > test_exec.json
     - name: "Import results to Xray (cloud) using multipart endpoint"
       run: |
         curl -X POST -H "Authorization: Bearer ${{ env.token }}"  -F info=@test_exec.json -F results=@"report.json" "${{ secrets.XRAYCLOUD_BASE_URL }}/api/v1/import/execution/cucumber/multipart"
