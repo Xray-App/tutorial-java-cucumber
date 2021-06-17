@@ -41,4 +41,4 @@ jobs:
         cat testexec_cloud_template.json  | sed s/PROJECT_KEY/${{ secrets.JIRACLOUD_PROJECT_KEY }}/g | sed s/TEST_ENVIRONMENT_NAME/${{ env.BROWSER }}/g | sed s/TESTPLAN_KEY/${{ secrets.XRAYCLOUD_TEST_PLAN_KEY }}/g > test_exec.json
     - name: "Import results to Xray (cloud) using multipart endpoint"
       run: |
-        curl -X POST -H "Authorization: Bearer ${{ env.token }}"  -F info=@test_exec.json -F results=@"merged-test-results.json" "${{ secrets.XRAYCLOUD_BASE_URL }}/api/v1/import/execution/cucumber/multipart"
+        curl -X POST -H "Authorization: Bearer ${{ env.token }}"  -F info=@test_exec.json -F results=@"report.json" "${{ secrets.XRAYCLOUD_BASE_URL }}/api/v1/import/execution/cucumber/multipart"
