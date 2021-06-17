@@ -1,0 +1,15 @@
+{
+    "fields": {
+        "project": {
+            "key": "PROJECT_KEY"
+        },
+        "summary": "Test Execution for cucumber execution",
+        "issuetype": {
+            "name": "Test Execution"
+        }
+    }, 
+    "xrayFields": {
+        	"testPlanKey": "TESTPLAN_KEY",
+        	"environments": ["TEST_ENVIRONMENT_NAME"]
+    }
+}
