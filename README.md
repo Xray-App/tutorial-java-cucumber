@@ -30,6 +30,13 @@ mvn clean compile test -Dcucumber.plugin="json:report.json" -Dcucumber.features=
 
 We need to specify that we want a Cucumber JSON report as output, and also the path where the .feature files are at.
 
+Tests can also run inside a Docker container; local directory/file should be mounted so that Cucumber results are stored locally.
+
+```bash
+docker build . -t cucumber_java_tests
+docker run --rm -v $(pwd)/report.json:/source/report.json -t cucumber_java_tests
+```
+
 
 ## Submitting results to Jira
 
