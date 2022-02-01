@@ -1,5 +1,5 @@
 #!/bin/bash
-BASE_URL=https://xray.cloud.xpand-it.com
+BASE_URL=https://xray.cloud.getxray.app
 PROJECT=CALC
  
 rm -f features.zip
