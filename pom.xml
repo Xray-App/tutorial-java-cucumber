@@ -36,7 +36,16 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+
+        	<dependency>
+         	   <groupId>app.getxray</groupId>
+           	   <artifactId>xray-maven-plugin</artifactId>
+          	    <version>0.8.0</version>
+          	    <scope>test</scope>
+         	</dependency>
+
+
+	</dependencies>
 
     <build>
         <plugins>
@@ -49,7 +58,23 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
-            </plugin>
-        </plugins>
+		</plugin>
+
+        	<plugin>
+         	   <groupId>app.getxray</groupId>
+           	   <artifactId>xray-maven-plugin</artifactId>
+       		    <configuration>
+                	<clientId></clientId>
+                	<clientSecret></clientSecret>
+                	<cloud>true</cloud>
+			<reportFormat>cucumber</reportFormat>
+			<testExecInfoJson>xrayInfo.json</testExecInfoJson>
+			<reportFile>report.json</reportFile>
+			<verbose>true</verbose>
+            	    </configuration>
+         	</plugin>
+
+ 	</plugins>
+
     </build>
 </project>
