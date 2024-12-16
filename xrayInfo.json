@@ -1,0 +1,15 @@
+{
+  "fields": {
+    "summary": "Test execution, 2023/01/26 09:33:50",
+    "issuetype": {
+      "name": "Test Execution"
+    },
+    "project": {
+      "key": "XT"
+    },
+    "description": "Automated test execution, Platform: android, Date: 2023/01/26 09:33:50",
+    "assignee": {
+	    "id": "557058:93649b4a-8b28-4b96-bf77-eaeac9d7514f"
+    }
+  }
+}
