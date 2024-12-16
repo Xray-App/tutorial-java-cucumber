@@ -1,0 +1,39 @@
+#  Template maven-build
+
+#  This template allows you to test and build your Java project with Maven.
+#  The workflow allows running tests, code checkstyle and security scans on the default branch.
+
+# Prerequisites: pom.xml and appropriate project structure should exist in the repository.
+
+image: maven:3.6.3
+
+pipelines:
+  default:
+    - step:
+        name: Export/generate features from Xray cloud
+        caches:
+          - maven
+        script:
+          - mvn -B xray:export-features -Dxray.issueKeys=XT-17,XT-18 -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
+    - parallel:
+      - step:
+          name: Build and Test
+          caches:
+            - maven
+          script:
+            - mvn -B test verify -Dcucumber.plugin="json:report.json" -Dcucumber.features="features/" --file pom.xml
+          after-script:
+              # Collect checkstyle results, if any, and convert to Bitbucket Code Insights.
+            - pipe: atlassian/checkstyle-report:0.3.0
+      - step:
+          name: Security Scan
+          script:
+            # Run a security scan for sensitive data.
+            # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
+            - pipe: atlassian/git-secrets-scan:0.5.1
+    - step:
+        name: Import results to Xray cloud
+        caches:
+          - maven
+        script:
+          - mvn -B xray:import-results -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
