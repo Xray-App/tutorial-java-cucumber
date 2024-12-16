@@ -14,7 +14,7 @@ pipelines:
         caches:
           - maven
         script:
-          - mvn -B xray:export-features -Dxray.issueKeys=XT-17,XT-18 -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
+          - mvn -B xray:export-features -Dxray.issueKeys=$issue_keys -Dxray.outputDir=features/ -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
     - parallel:
       - step:
           name: Build and Test
