@@ -11,6 +11,12 @@ pipelines:
   default:
     - parallel:
       - step:
+          name: Export/generate features from Xray cloud
+          caches:
+            - maven
+          script:
+            - mvn -B xray:export-features  -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
+      - step:
           name: Build and Test
           caches:
             - maven
@@ -30,4 +36,4 @@ pipelines:
           caches:
             - maven
           script:
-            - mvn -B xray:import-results --file pom.xml
+            - mvn -B xray:import-results -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
