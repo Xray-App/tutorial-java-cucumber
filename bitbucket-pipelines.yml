@@ -9,13 +9,13 @@ image: maven:3.6.3
 
 pipelines:
   default:
+    - step:
+        name: Export/generate features from Xray cloud
+        caches:
+          - maven
+        script:
+          - mvn -B xray:export-features -Dxray.issueKeys=XT-17,XT-18 -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
     - parallel:
-      - step:
-          name: Export/generate features from Xray cloud
-          caches:
-            - maven
-          script:
-            - mvn -B xray:export-features  -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
       - step:
           name: Build and Test
           caches:
@@ -31,9 +31,9 @@ pipelines:
             # Run a security scan for sensitive data.
             # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
             - pipe: atlassian/git-secrets-scan:0.5.1
-      - step:
-          name: Import results to Xray cloud
-          caches:
-            - maven
-          script:
-            - mvn -B xray:import-results -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
+    - step:
+        name: Import results to Xray cloud
+        caches:
+          - maven
+        script:
+          - mvn -B xray:import-results -Dxray.clientId=$client_id -Dxray.clientSecret=$client_secret --file pom.xml
