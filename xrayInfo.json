@@ -1,15 +1,20 @@
 {
   "fields": {
-    "summary": "Test execution, 2023/01/26 09:33:50",
+    "summary": "automated tests for core calculator logic",
     "issuetype": {
       "name": "Test Execution"
     },
     "project": {
       "key": "XT"
     },
-    "description": "Automated test execution, Platform: android, Date: 2023/01/26 09:33:50",
+    "description": "Automated test execution with some calculator core tests",
     "assignee": {
 	    "id": "557058:93649b4a-8b28-4b96-bf77-eaeac9d7514f"
     }
-  }
+  },
+
+    "xrayFields": {
+        "testPlanKey": "XT-16",
+        "environments": []
+    }
 }
